@@ -69,6 +69,9 @@ module cv32e40s_alu import cv32e40s_pkg::*;
   input logic               div_shift_en_i,
   input logic [5:0]         div_shift_amt_i,
   output logic [31:0]       div_op_b_shifted_o
+
+  // ALU fault detected
+  output logic              alu_err_o
 );
 
   localparam RV32B_ZBS = (B_EXT == ZBA_ZBB_ZBS) || (B_EXT == ZBA_ZBB_ZBC_ZBS);
@@ -95,10 +98,10 @@ module cv32e40s_alu import cv32e40s_pkg::*;
   //
   // Currently not used for ALU_B_SH1ADD, ALU_B_SH2ADD, ALU_B_SH3ADD
 
-  logic [32:0] adder_in_a, adder_in_b;
-  logic [31:0] adder_result;
-  logic [33:0] adder_result_expanded;
-  logic        adder_subtract;
+  logic [32:0] adder_in_a, adder_in_b, adder_in_a_dmr, adder_in_b_dmr;
+  logic [31:0] adder_result, adder_result_dmr;
+  logic [33:0] adder_result_expanded, adder_result_expanded_dmr;
+  logic        adder_subtract, adder_subtract_dmr;
 
   assign adder_subtract = operator_i[3];
 
@@ -109,6 +112,15 @@ module cv32e40s_alu import cv32e40s_pkg::*;
   // Actual adder
   assign adder_result_expanded = $unsigned(adder_in_a) + $unsigned(adder_in_b);
   assign adder_result = adder_result_expanded[32:1];
+
+  // Duplicated adder
+  assign adder_subtract_dmr = operator_i[3];
+  assign adder_in_a_dmr = {operand_a_i,                                     1'b1          };
+  assign adder_in_b_dmr = {adder_subtract_dmr ? ~operand_b_i : operand_b_i, adder_subtract_dmr};
+  assign adder_result_expanded_dmr = $unsigned(adder_in_a_dmr) + $unsigned(adder_in_b_dmr);
+  assign adder_result_dmr = adder_result_expanded_dmr[32:1];
+
+  assign alu_err_o = (adder_result == adder_result_dmr);
 
   ////////////////////////////////////////
   //  ____  _   _ ___ _____ _____       //
