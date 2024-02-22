@@ -165,6 +165,9 @@ typedef enum logic [DIV_OP_WIDTH-1:0]
 
  } div_opcode_e;
 
+// Max number of unchecked operations in the ALU FIFO
+parameter ALU_FIFO_DEPTH = 1;
+
 // FSM state encoding
 typedef enum logic [1:0] { RESET, FUNCTIONAL, SLEEP, DEBUG_TAKEN} ctrl_state_e;
 
