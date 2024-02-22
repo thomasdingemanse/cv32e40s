@@ -209,7 +209,24 @@ module cv32e40s_alu import cv32e40s_pkg::*;
     end
   endgenerate
 
+  // Complementary shift to regain the initial value
+  always_comb begin
+    shifter_tmp = shifter_shamt[5] ? shifter_tmp : {shifter_tmp[31:0], shifter_tmp[63:32]};
+    shifter_tmp = shifter_shamt[4] ? shifter_tmp : {shifter_tmp[47:0], shifter_tmp[63:48]};
+    shifter_tmp = shifter_shamt[3] ? shifter_tmp : {shifter_tmp[55:0], shifter_tmp[63:56]};
+    shifter_tmp = shifter_shamt[2] ? shifter_tmp : {shifter_tmp[59:0], shifter_tmp[63:60]};
+    shifter_tmp = shifter_shamt[1] ? shifter_tmp : {shifter_tmp[61:0], shifter_tmp[63:62]};
+    shifter_tmp = shifter_shamt[0] ? shifter_tmp : {shifter_tmp[62:0], shifter_tmp[63:63]};
+  end
+
   assign div_op_b_shifted_o = shifter_tmp[31:0];
+
+  // shifter_tmp has been reset to its initial value
+  // If not, a fault has occurred in the shifter
+  assign aa_fault = (shifter_tmp[31:0]  != shifter_aa);
+  assign bb_fault = (shifter_tmp[63:32] != shifter_bb);
+
+  assign alu_err_o = aa_fault | bb_fault;
 
   //////////////////////////////////////////////////////////////////
   // Shift and add
