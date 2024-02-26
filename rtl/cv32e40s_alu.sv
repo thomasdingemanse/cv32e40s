@@ -68,7 +68,7 @@ module cv32e40s_alu import cv32e40s_pkg::*;
   // Divider interface towards shifter
   input logic               div_shift_en_i,
   input logic [5:0]         div_shift_amt_i,
-  output logic [31:0]       div_op_b_shifted_o
+  output logic [31:0]       div_op_b_shifted_o,
 
   // ALU fault detected
   output logic              alu_err_o
