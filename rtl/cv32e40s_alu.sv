@@ -47,7 +47,7 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.             //
 ////////////////////////////////////////////////////////////////////////////////
 
-{* dont_touch = "true" *} module cv32e40s_alu import cv32e40s_pkg::*;
+module cv32e40s_alu import cv32e40s_pkg::*;
 #(
   parameter b_ext_e B_EXT  = B_NONE
 )
